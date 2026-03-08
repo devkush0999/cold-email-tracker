@@ -9,13 +9,13 @@ export default function CompanyTable(){
 
  const fetchCompanies = async () => {
 
-  const { data } = await supabase
-  .from("companies")
-  .select("*")
-  .order("created_at",{ascending:false})
+ const { data } = await supabase
+ .from("companies")
+ .select("*")
+ .order("created_at",{ascending:false})
 
-  setCompanies(data || [])
- }
+ setCompanies(data || [])
+}
 
  useEffect(()=>{
    fetchCompanies()

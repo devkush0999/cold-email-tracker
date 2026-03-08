@@ -11,21 +11,26 @@ export default function AddCompanyForm(){
  const [priority,setPriority] = useState("low")
  const [phone,setPhone] = useState("")
 
- const save = async () => {
+const save = async () => {
 
-   const { error } = await supabase
-   .from("companies")
-   .insert([{
-     company_name:company,
-     email,
-     description,
-     priority,
-     phone
-   }])
+ const { data:userData } = await supabase.auth.getUser()
 
-   if(error) alert(error.message)
-   else location.reload()
- }
+ const userId = userData.user?.id
+
+ const { error } = await supabase
+ .from("companies")
+ .insert([{
+   user_id:userId,
+   company_name:company,
+   email,
+   description,
+   priority,
+   phone
+ }])
+
+ if(error) alert(error.message)
+ else location.reload()
+}
 
  return(
 
