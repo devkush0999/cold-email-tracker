@@ -2,41 +2,59 @@
 
 import { useState } from "react"
 import { supabase } from "../lib/supabaseClient"
+import { useRouter } from "next/navigation"
 
-export default function Signup() {
+export default function Signup(){
+
+ const router = useRouter()
 
  const [email,setEmail] = useState("")
  const [password,setPassword] = useState("")
 
  const signup = async () => {
 
-   const { error } = await supabase.auth.signUp({
-     email,
-     password
-   })
+  const { error } = await supabase.auth.signUp({
+   email,
+   password
+  })
 
-   if(error) alert(error.message)
-   else alert("Check your email")
+  if(error){
+   alert(error.message)
+  }else{
+   router.push("/dashboard")
+  }
+
  }
 
- return (
-   <div className="p-10 flex flex-col gap-3">
+ return(
 
-    <input
-    placeholder="email"
-    onChange={(e)=>setEmail(e.target.value)}
-    />
+  <div className="flex flex-col gap-4 p-10 max-w-sm">
 
-    <input
-    type="password"
-    placeholder="password"
-    onChange={(e)=>setPassword(e.target.value)}
-    />
+   <h2 className="text-xl font-bold">
+    Signup
+   </h2>
 
-    <button onClick={signup}>
-      Signup
-    </button>
+   <input
+   placeholder="Email"
+   className="border p-2"
+   onChange={(e)=>setEmail(e.target.value)}
+   />
 
-   </div>
+   <input
+   type="password"
+   placeholder="Password"
+   className="border p-2"
+   onChange={(e)=>setPassword(e.target.value)}
+   />
+
+   <button
+   className="bg-black text-white p-2"
+   onClick={signup}
+   >
+    Create Account
+   </button>
+
+  </div>
+
  )
 }

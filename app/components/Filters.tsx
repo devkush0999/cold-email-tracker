@@ -1,30 +1,89 @@
-
-
-
-
 "use client"
 
-export default function Filters(){
+import { useState } from "react"
+import { Search } from "lucide-react"
 
- return(
+export default function Filters({ onFilter }: any) {
 
-  <div className="flex gap-4 mb-5">
+  const [search, setSearch] = useState("")
+  const [priority, setPriority] = useState("all")
 
-   <input
-   placeholder="Search company"
-   className="border p-2"
-   />
+  const handleSearch = (value: string) => {
 
-   <select className="border p-2">
+    setSearch(value)
 
-     <option>All</option>
-     <option>High</option>
-     <option>Medium</option>
-     <option>Low</option>
+    if (onFilter) {
+      onFilter({
+        search: value,
+        priority
+      })
+    }
+  }
 
-   </select>
+  const handlePriority = (value: string) => {
 
-  </div>
+    setPriority(value)
 
- )
+    if (onFilter) {
+      onFilter({
+        search,
+        priority: value
+      })
+    }
+  }
+
+  const reset = () => {
+
+    setSearch("")
+    setPriority("all")
+
+    if (onFilter) {
+      onFilter({
+        search: "",
+        priority: "all"
+      })
+    }
+  }
+
+  return (
+    <div className="bg-white border rounded-lg p-4 mb-6 flex flex-wrap items-center gap-4">
+
+      <div className="relative">
+
+        <Search
+          size={16}
+          className="absolute left-3 top-3 text-gray-400"
+        />
+
+        <input
+          placeholder="Search company..."
+          value={search}
+          onChange={(e) => handleSearch(e.target.value)}
+          className="border rounded pl-9 pr-3 py-2 w-64"
+        />
+
+      </div>
+
+      <select
+        value={priority}
+        onChange={(e) => handlePriority(e.target.value)}
+        className="border rounded px-3 py-2"
+      >
+
+        <option value="all">All Priority</option>
+        <option value="high">🔴 High</option>
+        <option value="medium">🟡 Medium</option>
+        <option value="low">⚪ Low</option>
+
+      </select>
+
+      <button
+        onClick={reset}
+        className="border px-4 py-2 rounded"
+      >
+        Reset
+      </button>
+
+    </div>
+  )
 }
