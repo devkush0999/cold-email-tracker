@@ -1,89 +1,137 @@
 "use client"
 
 import { useState } from "react"
-import { Search } from "lucide-react"
 
 export default function Filters({ onFilter }: any) {
 
-  const [search, setSearch] = useState("")
-  const [priority, setPriority] = useState("all")
+ const [search,setSearch] = useState("")
+ const [priority,setPriority] = useState("all")
+ const [status,setStatus] = useState("all")
+ const [date,setDate] = useState("")
+ const [important,setImportant] = useState(false)
 
-  const handleSearch = (value: string) => {
+ const triggerFilter = (newValues:any) => {
 
-    setSearch(value)
-
-    if (onFilter) {
-      onFilter({
-        search: value,
-        priority
-      })
-    }
+  const values = {
+   search,
+   priority,
+   status,
+   date,
+   important,
+   ...newValues
   }
 
-  const handlePriority = (value: string) => {
+  onFilter(values)
+ }
 
-    setPriority(value)
+ const reset = () => {
 
-    if (onFilter) {
-      onFilter({
-        search,
-        priority: value
-      })
-    }
-  }
+  setSearch("")
+  setPriority("all")
+  setStatus("all")
+  setDate("")
+  setImportant(false)
 
-  const reset = () => {
+  onFilter({
+   search:"",
+   priority:"all",
+   status:"all",
+   date:"",
+   important:false
+  })
 
-    setSearch("")
-    setPriority("all")
+ }
 
-    if (onFilter) {
-      onFilter({
-        search: "",
-        priority: "all"
-      })
-    }
-  }
+ return(
 
-  return (
-    <div className="bg-white border rounded-lg p-4 mb-6 flex flex-wrap items-center gap-4">
+ <div className="bg-white border rounded-lg p-4 mb-6 flex flex-col md:flex-row md:flex-wrap gap-3">
 
-      <div className="relative">
+  {/* Search */}
 
-        <Search
-          size={16}
-          className="absolute left-3 top-3 text-gray-400"
-        />
+  <input
+   placeholder="Search company"
+   value={search}
+   onChange={(e)=>{
+    setSearch(e.target.value)
+    triggerFilter({search:e.target.value})
+   }}
+   className="border p-2 rounded w-full md:w-52"
+  />
 
-        <input
-          placeholder="Search company..."
-          value={search}
-          onChange={(e) => handleSearch(e.target.value)}
-          className="border rounded pl-9 pr-3 py-2 w-64"
-        />
+  {/* Priority */}
 
-      </div>
+  <select
+   value={priority}
+   onChange={(e)=>{
+    setPriority(e.target.value)
+    triggerFilter({priority:e.target.value})
+   }}
+   className="border p-2 rounded"
+  >
 
-      <select
-        value={priority}
-        onChange={(e) => handlePriority(e.target.value)}
-        className="border rounded px-3 py-2"
-      >
+   <option value="all">Priority</option>
+   <option value="high">High</option>
+   <option value="medium">Medium</option>
+   <option value="low">Low</option>
 
-        <option value="all">All Priority</option>
-        <option value="high">🔴 High</option>
-        <option value="medium">🟡 Medium</option>
-        <option value="low">⚪ Low</option>
+  </select>
 
-      </select>
+  {/* Status */}
 
-      <button
-        onClick={reset}
-        className="border px-4 py-2 rounded"
-      >
-        Reset
-      </button>
+  <select
+   value={status}
+   onChange={(e)=>{
+    setStatus(e.target.value)
+    triggerFilter({status:e.target.value})
+   }}
+   className="border p-2 rounded"
+  >
 
-    </div>
-  )
+   <option value="all">Status</option>
+   <option value="applied">Applied</option>
+   <option value="follow-up">Follow Up</option>
+   <option value="responded">Responded</option>
+   <option value="rejected">Rejected</option>
+
+  </select>
+
+  {/* Date */}
+
+  <input
+   type="date"
+   value={date}
+   onChange={(e)=>{
+    setDate(e.target.value)
+    triggerFilter({date:e.target.value})
+   }}
+   className="border p-2 rounded"
+  />
+
+  {/* Important ⭐ */}
+
+  <button
+   onClick={()=>{
+    const newValue = !important
+    setImportant(newValue)
+    triggerFilter({important:newValue})
+   }}
+   className={`px-3 py-2 rounded border ${
+    important ? "bg-yellow-200" : ""
+   }`}
+  >
+   ⭐ Important
+  </button>
+
+  {/* Reset */}
+
+  <button
+   onClick={reset}
+   className="border px-4 py-2 rounded"
+  >
+   Reset
+  </button>
+
+ </div>
+
+ )
 }

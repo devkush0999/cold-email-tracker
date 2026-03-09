@@ -26,24 +26,26 @@ export default function Home(){
   setFilter(data)
  }
 
-  useEffect(()=>{
- 
-   const checkUser = async () => {
- 
-    const { data } = await supabase.auth.getUser()
- 
-    if(!data.user){
-      router.push("/login")
-    } else {
-      setUser(data.user)
-      fetchCompanies(data.user.id)
-    }
- 
-   }
- 
-   checkUser()
- 
-  },[])
+ useEffect(()=>{
+
+ const init = async () => {
+
+  const { data } = await supabase.auth.getUser()
+
+  if(!data.user){
+   router.push("/login")
+   return
+  }
+
+  setUser(data.user)
+
+  fetchCompanies(data.user.id)
+
+ }
+
+ init()
+
+},[])
 
 
  const fetchCompanies = async (userId:string)=>{
@@ -56,9 +58,16 @@ export default function Home(){
   setCompanies(data || [])
  }
 
- if(!user){
-   return <p className="p-6">Loading...</p>
- }
+if(!user){
+ return (
+  <div className="p-6">
+   <h1 className="text-xl sm:text-2xl font-bold">
+    Cold Email Dashboard
+   </h1>
+   <p className="text-gray-500 mt-2">Loading...</p>
+  </div>
+ )
+}
 
  return(
 
@@ -66,16 +75,20 @@ export default function Home(){
 
    
        <Link href="/dashboard" className="flex gap-2">
-     <h1 className="text-2xl font-bold mb-6">
-    Dashboard
-   </h1>
+     <h1 className="text-xl sm:text-2xl font-bold">
+ Cold Email Dashboard
+</h1>
     </Link>
+
+   
 
    <Filters onFilter={handleFilter} />
 
     <AddCompanyForm/>
 
-   <CompanyTable  />
+    <Filters onFilter={handleFilter} />
+   
+   <CompanyTable filter={filter}/>
 
   </div>
 

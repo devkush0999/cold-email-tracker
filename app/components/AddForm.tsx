@@ -14,7 +14,13 @@ export default function AddCompanyForm(){
 
  const save = async () => {
 
+
   setLoading(true)
+  if(!company || !email){
+   alert("Company name and email are required")
+   setLoading(false)
+   return
+  }
 
   const { data:userData } = await supabase.auth.getUser()
   const userId = userData.user?.id

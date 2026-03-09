@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabaseClient"
 import { useRouter } from "next/navigation"
 import CompanyTable from "../components/Table"
 import StatsCards from "../components/StatsCards"
+import Filters from "../components/Filters"
 
 export default function Dashboard(){
 
@@ -12,6 +13,13 @@ export default function Dashboard(){
 
  const [user,setUser] = useState<any>(null)
  const [companies,setCompanies] = useState<any[]>([])
+  const [filter,setFilter] = useState({
+ search:"",
+ priority:"all",
+ status:"all",
+ date:"",
+ important:false
+})
 
  useEffect(()=>{
 
@@ -32,12 +40,21 @@ export default function Dashboard(){
 
  },[])
 
+ const handleFilter = (data:any)=>{
+ setFilter(data)
+}
+
  const fetchCompanies = async (userId:string)=>{
 
-  const { data } = await supabase
+  const { data,error } = await supabase
   .from("companies")
   .select("*")
   .eq("user_id",userId)
+  .order("created_at",{ascending:false})
+
+  if(error){
+   console.log(error.message)
+  }
 
   setCompanies(data || [])
  }
@@ -51,11 +68,11 @@ export default function Dashboard(){
  const total = companies.length
 
  const responses = companies.filter(
-  (c:any)=>c.response === true
+  (c:any)=>c.status === "responded"
  ).length
 
  const followUps = companies.filter(
-  (c:any)=>c.follow_up === false
+  (c:any)=>c.status === "follow-up"
  ).length
 
  const rate = total
@@ -91,7 +108,9 @@ export default function Dashboard(){
 
    <div className="overflow-x-auto mt-6">
 
-     <CompanyTable />
+    <Filters onFilter={handleFilter} />
+
+<CompanyTable filter={filter}/>
 
    </div>
 
