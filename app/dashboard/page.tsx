@@ -91,7 +91,7 @@ export default function Dashboard(){
 
    <div className="overflow-x-auto mt-6">
 
-     <CompanyTable userId={user.id} />
+     <CompanyTable />
 
    </div>
 

@@ -79,22 +79,42 @@
 import { useEffect, useState } from "react"
 import { supabase } from "../lib/supabaseClient"
 
+type Company = {
+ id: string
+ company_name: string
+ email: string
+ description: string
+ priority: string
+ phone: string
+ follow_up: boolean
+}
+
 export default function CompanyTable(){
 
- const [companies,setCompanies] = useState<any[]>([])
+ const [companies,setCompanies] = useState<Company[]>([])
+ const [loading,setLoading] = useState(true)
 
  const fetchCompanies = async () => {
 
- const { data:userData } = await supabase.auth.getUser()
- const userId = userData.user?.id
+  setLoading(true)
 
- const { data } = await supabase
- .from("companies")
- .select("*")
- .eq("user_id",userId)
- .order("created_at",{ascending:false})
+  const { data:userData } = await supabase.auth.getUser()
+  const userId = userData.user?.id
 
- setCompanies(data || [])
+  if(!userId) return
+
+  const { data,error } = await supabase
+   .from("companies")
+   .select("*")
+   .eq("user_id",userId)
+   .order("created_at",{ascending:false})
+
+  if(error){
+   console.error(error.message)
+  }
+
+  setCompanies(data || [])
+  setLoading(false)
  }
 
  useEffect(()=>{
@@ -119,6 +139,18 @@ export default function CompanyTable(){
   .eq("id",id)
 
   fetchCompanies()
+ }
+
+ if(loading){
+  return <p className="p-6 text-gray-500">Loading companies...</p>
+ }
+
+ if(companies.length === 0){
+  return (
+   <div className="bg-white shadow rounded-lg p-8 text-center text-gray-500">
+    No companies added yet
+   </div>
+  )
  }
 
  return(
@@ -149,7 +181,7 @@ export default function CompanyTable(){
 
   <tbody>
 
-   {companies.map((c:any)=>{
+   {companies.map((c)=>{
 
     const priorityColor =
       c.priority === "high"
@@ -176,23 +208,23 @@ export default function CompanyTable(){
 
       <td className="p-3">
         <button
-        onClick={()=>toggleFollow(c.id,c.follow_up)}
-        className={`px-3 py-1 text-xs rounded ${
-          c.follow_up
-          ? "bg-green-100 text-green-600"
-          : "bg-gray-200 text-gray-700"
-        }`}
+         onClick={()=>toggleFollow(c.id,c.follow_up)}
+         className={`px-3 py-1 text-xs rounded ${
+           c.follow_up
+            ? "bg-green-100 text-green-600"
+            : "bg-gray-200 text-gray-700"
+         }`}
         >
-        {c.follow_up ? "Done" : "Pending"}
+         {c.follow_up ? "Done" : "Pending"}
         </button>
       </td>
 
       <td className="p-3">
         <button
-        onClick={()=>deleteCompany(c.id)}
-        className="text-red-500 hover:text-red-700 text-sm"
+         onClick={()=>deleteCompany(c.id)}
+         className="text-red-500 hover:text-red-700 text-sm"
         >
-          Delete
+         Delete
         </button>
       </td>
 
@@ -208,12 +240,11 @@ export default function CompanyTable(){
 
  </div>
 
-
  {/* -------- Mobile Cards -------- */}
 
  <div className="md:hidden flex flex-col gap-4">
 
- {companies.map((c:any)=>{
+ {companies.map((c)=>{
 
   const priorityColor =
       c.priority === "high"
@@ -228,7 +259,7 @@ export default function CompanyTable(){
 
     <div className="flex justify-between items-center mb-2">
 
-      <h3 className="font-semibold">
+      <h3 className="font-semibold text-sm">
         {c.company_name}
       </h3>
 
@@ -238,36 +269,32 @@ export default function CompanyTable(){
 
     </div>
 
-    <p className="text-sm text-gray-600">
-      {c.email}
-    </p>
+    <p className="text-sm text-gray-600">{c.email}</p>
 
     <p className="text-sm text-gray-500 mt-1">
       {c.description}
     </p>
 
-    <p className="text-sm mt-2">
-      📞 {c.phone}
-    </p>
+    <p className="text-sm mt-2">📞 {c.phone}</p>
 
     <div className="flex justify-between items-center mt-3">
 
       <button
-      onClick={()=>toggleFollow(c.id,c.follow_up)}
-      className={`px-3 py-1 text-xs rounded ${
-        c.follow_up
-        ? "bg-green-100 text-green-600"
-        : "bg-gray-200 text-gray-700"
-      }`}
+       onClick={()=>toggleFollow(c.id,c.follow_up)}
+       className={`px-3 py-1 text-xs rounded ${
+         c.follow_up
+          ? "bg-green-100 text-green-600"
+          : "bg-gray-200 text-gray-700"
+       }`}
       >
-      {c.follow_up ? "Done" : "Pending"}
+       {c.follow_up ? "Done" : "Pending"}
       </button>
 
       <button
-      onClick={()=>deleteCompany(c.id)}
-      className="text-red-500 text-sm"
+       onClick={()=>deleteCompany(c.id)}
+       className="text-red-500 text-sm"
       >
-      Delete
+       Delete
       </button>
 
     </div>
