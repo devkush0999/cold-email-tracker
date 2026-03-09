@@ -1,10 +1,9 @@
-import { supabase } from "../../lib/db"
+import { supabase } from "../../lib/supabaseClient"
 
 export async function GET() {
-
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("companies")
     .select("*")
 
-  return Response.json(data)
+  return Response.json({ data, error })
 }
