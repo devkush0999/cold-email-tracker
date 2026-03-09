@@ -75,7 +75,7 @@ export default function Home(){
 
     <AddCompanyForm/>
 
-   <CompanyTable filter={filter} />
+   <CompanyTable  />
 
   </div>
 
